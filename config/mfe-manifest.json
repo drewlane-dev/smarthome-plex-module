@@ -1,0 +1,14 @@
+{
+  "name": "plex",
+  "displayName": "Plex Media Server",
+  "description": "Stream your personal media collection. Access your movies, TV shows, music, and photos from anywhere.",
+  "remoteEntry": "/remoteEntry.json",
+  "remoteName": "plex",
+  "exposedModule": "./Component",
+  "componentExport": "PlexComponent",
+  "tile": {
+    "label": "Plex",
+    "icon": "live_tv",
+    "color": "#E5A00D"
+  }
+}

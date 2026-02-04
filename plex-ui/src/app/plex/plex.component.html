@@ -1,0 +1,125 @@
+<div class="plex-container">
+  <div class="plex-header">
+    <span class="material-icons plex-icon">live_tv</span>
+    <h2>{{ moduleDefinition?.displayName || 'Plex Media Server' }}</h2>
+  </div>
+
+  <div class="plex-content">
+    @if (loading && !moduleStatus && !waitingForService) {
+      <div class="loading-state">
+        <span class="material-icons spinning">sync</span>
+        <p>Loading...</p>
+      </div>
+    } @else if (waitingForService) {
+      <div class="loading-state">
+        <span class="material-icons spinning">sync</span>
+        <p>{{ serviceStatusMessage }}</p>
+        <p class="loading-hint">This may take a few minutes...</p>
+      </div>
+    } @else if (moduleStatus?.serviceDeployed || (moduleStatus?.isDeployed && moduleStatus?.fieldValues?.['deployService'] === 'false')) {
+      <div class="status-section">
+        <div class="status-item">
+          <span class="status-label">Status:</span>
+          <span class="status-value" [class.running]="moduleStatus?.serviceRunning || moduleStatus?.fieldValues?.['deployService'] === 'false'">
+            @if (moduleStatus?.fieldValues?.['deployService'] === 'false') {
+              UI Only
+            } @else {
+              {{ moduleStatus?.serviceRunning ? 'Running' : 'Stopped' }}
+            }
+          </span>
+        </div>
+        @if (moduleStatus?.podStatus && moduleStatus?.fieldValues?.['deployService'] !== 'false') {
+          <div class="status-item">
+            <span class="status-label">Pod:</span>
+            <span class="status-value">{{ moduleStatus?.podStatus }}</span>
+          </div>
+        }
+        @for (field of moduleDefinition?.fields; track field.name) {
+          @if (moduleStatus?.fieldValues?.[field.name] && field.name !== 'deployService' && field.name !== 'claimToken') {
+            <div class="status-item">
+              <span class="status-label">{{ field.label }}:</span>
+              <span class="status-value">{{ getFieldDisplayValue(field, moduleStatus?.fieldValues?.[field.name] || '') }}</span>
+            </div>
+          }
+        }
+        @if (moduleStatus?.serviceRunning && moduleStatus?.serviceNodePort) {
+          <div class="status-item connection-info">
+            <span class="status-label">Web Interface:</span>
+            <span class="status-value highlight">Port {{ moduleStatus?.serviceNodePort }}</span>
+          </div>
+        }
+      </div>
+
+      @if (moduleStatus?.serviceRunning) {
+        <button class="action-btn primary" (click)="openPlex()">
+          <span class="material-icons">open_in_new</span>
+          Open Plex Web
+        </button>
+      }
+
+      @if (error) {
+        <div class="error-message">
+          <span class="material-icons">error</span>
+          {{ error }}
+        </div>
+      }
+
+      <button class="action-btn danger" (click)="remove()" [disabled]="loading">
+        @if (loading) {
+          <span class="material-icons spinning">sync</span>
+        } @else {
+          <span class="material-icons">delete</span>
+        }
+        Remove
+      </button>
+    } @else {
+      @if (moduleDefinition?.description) {
+        <p class="description">{{ moduleDefinition?.description }}</p>
+      }
+
+      <div class="form-grid">
+        @for (field of moduleDefinition?.fields; track field.name) {
+          <div class="form-group" [class.full-width]="field.name === 'claimToken'">
+            <label [for]="field.name">{{ field.label }}</label>
+            @if (field.type === 'select' && field.options) {
+              <select
+                [id]="field.name"
+                [(ngModel)]="fieldValues[field.name]"
+              >
+                @for (option of field.options; track getOptionValue(option)) {
+                  <option [value]="getOptionValue(option)">{{ getOptionLabel(option) }}</option>
+                }
+              </select>
+            } @else {
+              <input
+                [type]="field.type"
+                [id]="field.name"
+                [(ngModel)]="fieldValues[field.name]"
+                [placeholder]="field.defaultValue || ''"
+              />
+            }
+            @if (field.description) {
+              <span class="field-hint">{{ field.description }}</span>
+            }
+          </div>
+        }
+      </div>
+
+      @if (error) {
+        <div class="error-message">
+          <span class="material-icons">error</span>
+          {{ error }}
+        </div>
+      }
+
+      <button class="action-btn primary" (click)="deploy()" [disabled]="loading">
+        @if (loading) {
+          <span class="material-icons spinning">sync</span>
+        } @else {
+          <span class="material-icons">play_arrow</span>
+        }
+        Start Plex Server
+      </button>
+    }
+  </div>
+</div>

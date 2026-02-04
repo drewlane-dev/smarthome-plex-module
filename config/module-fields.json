@@ -1,0 +1,48 @@
+{
+  "fields": [
+    {
+      "name": "deployService",
+      "label": "Deploy Plex Server",
+      "type": "select",
+      "required": true,
+      "defaultValue": "true",
+      "options": [
+        { "value": "true", "label": "Yes" },
+        { "value": "false", "label": "No (UI only)" }
+      ],
+      "description": "Deploy the Plex Media Server container"
+    },
+    {
+      "name": "claimToken",
+      "label": "Plex Claim Token",
+      "type": "text",
+      "required": false,
+      "defaultValue": "",
+      "description": "Get your claim token from https://plex.tv/claim (valid for 4 minutes)"
+    },
+    {
+      "name": "mediaPath",
+      "label": "Media Directory",
+      "type": "text",
+      "required": true,
+      "defaultValue": "/mnt/media",
+      "description": "Host path to your media files (movies, TV shows, music)"
+    },
+    {
+      "name": "configPath",
+      "label": "Config Directory",
+      "type": "text",
+      "required": true,
+      "defaultValue": "/var/lib/plex",
+      "description": "Host path to store Plex configuration and database"
+    },
+    {
+      "name": "transcodePath",
+      "label": "Transcode Directory",
+      "type": "text",
+      "required": false,
+      "defaultValue": "/tmp/plex-transcode",
+      "description": "Host path for temporary transcode files"
+    }
+  ]
+}

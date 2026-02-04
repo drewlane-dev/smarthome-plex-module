@@ -1,0 +1,43 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: plex-mfe
+  namespace: smarthome
+  labels:
+    app: plex-mfe
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: plex-mfe
+  template:
+    metadata:
+      labels:
+        app: plex-mfe
+    spec:
+      containers:
+        - name: plex-mfe
+          image: plex-mfe:latest
+          imagePullPolicy: Never
+          ports:
+            - containerPort: 80
+          resources:
+            limits:
+              memory: "128Mi"
+              cpu: "100m"
+            requests:
+              memory: "64Mi"
+              cpu: "50m"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: plex-mfe
+  namespace: smarthome
+spec:
+  type: NodePort
+  selector:
+    app: plex-mfe
+  ports:
+    - port: 80
+      targetPort: 80
